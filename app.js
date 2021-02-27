@@ -1,4 +1,6 @@
 const express = require('express');
+var Twitter = require('twitter');
+require('dotenv/config')
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose')
 const mongo = require('./api/mongo')
@@ -24,32 +26,61 @@ mongoose.connect('mongodb://localhost/twitter',{
 .catch((err) => console.error(err))
 
 
-app.get('/', (req, res) =>{
-    res.send('This is my first path')
-})
 
-// app.get("/getTrends", (request, response, next) => {
-//     console.log("Received Get trends request for Country : " + request.query.country  + " Date  : " + request.query.date)
+const apikey = process.env.apikey
+const apiSecretKey = process.env.apikeysecret
+const accessToken = process.env.accesstoken
+const accessTokenSecret = process.env.accesstokensecret
  
-//     getDataUrl(  request.query.country , request.query.date  ).then( dataUrl => {
+var client = new Twitter({
+  consumer_key: apikey,
+  consumer_secret: apiSecretKey,
+  access_token_key: accessToken,
+  access_token_secret: accessTokenSecret
+});
  
-//         getTrendsData(dataUrl).then( topTrends => {
- 
-//                     response.json( topTrends ) ;
- 
-//                     pickedUpArray = {};
- 
-//         });
-//     });  
-// });
+var params = {screen_name: 'SampleSimple3'};
+client.get('statuses/user_timeline', params, function(error, tweets, response) {
+  if (!error) {
+    console.log(tweets);
+  }
+});
 
-app.get('/aacount/settings', (req, res) =>{
-    res.send(req.params)
-})
+client.post('statuses/update', {status: 'I am a tweet'}, function(error, tweet, response) {
+    if (!error) {
+      console.log(tweet);
+    }
+  });
 
-app.post('/statuses/update', (req, res) =>{
-    res.send('this works')
-})
+
+
+
+// app.get('/', (req, res) =>{
+//     res.send('This is my first path')
+// })
+
+// // app.get("/getTrends", (request, response, next) => {
+// //     console.log("Received Get trends request for Country : " + request.query.country  + " Date  : " + request.query.date)
+ 
+// //     getDataUrl(  request.query.country , request.query.date  ).then( dataUrl => {
+ 
+// //         getTrendsData(dataUrl).then( topTrends => {
+ 
+// //                     response.json( topTrends ) ;
+ 
+// //                     pickedUpArray = {};
+ 
+// //         });
+// //     });  
+// // });
+
+// app.get('/aacount/settings', (req, res) =>{
+//     res.send(req.params)
+// })
+
+// app.post('/statuses/update', (req, res) =>{
+//     res.send('this works')
+// })
 
 
 
@@ -60,5 +91,4 @@ app.post('/statuses/update', (req, res) =>{
 const port = process.env.PORT || 3000
 app.listen(port, () => console.log(`Listening on port ${port} ...`))
 
-//Timeline
-//Profile
+
